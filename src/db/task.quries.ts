@@ -15,7 +15,7 @@ export const createTask = async (data: Omit<Task, 'id' | 'createdAt' | 'updatedA
 
     await pool.execute<ResultSetHeader>(sql, [id, data.title, data.description, data.status, now, now]);
 
-    return { id, ...data, createdAt: now, updateAt: now };
+    return { id, ...data, createdAt: now, updatedAt: now };
 };
 
 export const getAllTask = async (): Promise<Task[]> => {

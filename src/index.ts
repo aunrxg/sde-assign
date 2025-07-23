@@ -1,15 +1,18 @@
-import express from "express";
+import dotenv from "dotenv";
+import connectDB from "@db/index.js";
+import app from "./app.js";
 
-const app = express();
-const port = 3000;
-
-app.get("/", (req, res) => {
-  res.send("chal gaya");
+dotenv.config({
+  path: './env'
 });
 
-console.log("hello");
-console.log("OK");
 
-app.listen(port, () => {
-  return console.log(`Express server running at http://localhost:${port}`);
-});
+connectDB()
+  .then(() => {
+    app.listen(process.env.PORT || 8000, () => {
+      console.log(`Server is Running at http://localhost:${process.env.PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("DB Connection FAiled: ", err);
+  })

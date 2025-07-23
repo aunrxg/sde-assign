@@ -120,3 +120,4 @@ dist
 # build
 
 dist/
+/src/generated/prisma

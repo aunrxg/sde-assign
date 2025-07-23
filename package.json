@@ -1,0 +1,18 @@
+{
+  "name": "task-management-system",
+  "version": "1.0.0",
+  "description": "REST API service for to manage a basic TASK MANAGEMENT SYSTEM (To-Do App) using Node, Express and Typescript.",
+  "keywords": [
+    "crud",
+    "api",
+    "todo",
+    "sde-internship"
+  ],
+  "license": "ISC",
+  "author": "Anurag Poddar",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

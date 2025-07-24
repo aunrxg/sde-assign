@@ -46,8 +46,8 @@ src/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/task-api.git
-cd task-api
+git clone https://github.com/aunrxg/sde-assign.git
+cd sde-assign
 ```
 
 ### 2. Install Dependencies
@@ -65,7 +65,7 @@ DB_NAME=mydb
 DB_PORT=3306
 ```
 
-### 4. Spin up Docker
+### 4. Spin up MySQL server with Docker
 ```bash
 docker-componse up -d
 ```

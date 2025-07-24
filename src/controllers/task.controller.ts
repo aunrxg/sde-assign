@@ -1,64 +1,110 @@
 import { Request, Response } from "express";
-import { 
+
+import {
   createTask,
+  deleteTask,
+  getAllTasks,
+  getTaskById,
   updateTask,
- } from "@db/task.quries.js";
-import { createTaskSchema, updateTaskSchema } from "../validation/task.schema.js";
+} from "@db/task.quries.js";
 import { asyncHandler } from "@utils/asyncHandler.js";
 import { ApiError } from "@utils/apiError.js";
 import { ApiResponse } from "@utils/apiResponse.js";
 
-export const handleCreateTask = asyncHandler(async (req: Request, res: Response) => {
-
-  // validate body inputs
-  const parsed = createTaskSchema.safeParse(req.body);
-  if(!parsed.success) {
-    const error = Object.entries(parsed.error.flatten().fieldErrors).flatMap(([field, msgs]) => 
-      (msgs || []).map((msg) => `${field}: ${msg}`)
-    );
-
-    throw new ApiError(400, "Validation Error", error);
-  }
-
-  try {
-    const newTask = await createTask(parsed.data);
-    if(!newTask) {
-      throw new ApiError(400, "");
+export const handleCreateTask = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const { title, description, dueDate, status } = (req as any).validatedData
+        .body;
+      const data = { title, description, dueDate, status };
+      const newTask = await createTask(data);
+      return res
+        .status(201)
+        .json(
+          new ApiResponse(201, { task: newTask }, "Task added successfully")
+        );
+    } catch (error) {
+      console.error("Create Task failed: ", error);
+      throw new ApiError(500, "Failed to create task");
     }
-    return res
-      .status(201)
-      .json(new ApiResponse(201, { task: newTask }, "Task Added succesfully"));
-  } catch (error) {
-    console.error(error);
-    throw new ApiError(500, "Failed to creaet task, something went wrong");
   }
+);
 
-});
-
-export const handleUpdateTask = asyncHandler(async (req: Request, res: Response) => {
-
-  // validate body inputs
-  const parsed = updateTaskSchema.safeParse(req.body);
-
-  if(!parsed.success) {
-    const error = Object.entries(parsed.error.flatten().fieldErrors).flatMap(([field, msgs]) => 
-      (msgs || []).map((msg) => `${field}: ${msg}`)
-    );
-    throw new ApiError(400, "Validation Error", error);
-  }
-
-  try {
-    const updatedTask = await updateTask(parsed.data.id, parsed.data);
-    if(!updatedTask) {
-      throw new ApiError(404, "Task not found")
+export const handleGetAllTasks = asyncHandler(
+  async (_: Request, res: Response) => {
+    try {
+      const tasks = await getAllTasks();
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(200, { tasks: tasks }, "Tasks fetched Successfully")
+        );
+    } catch (error) {
+      throw new ApiError(500, "Couldn't fetch tasks, try later");
     }
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, { task: updatedTask }, "Task updated successfully"));
-  } catch (error) {
-    console.error(error);
-    throw new ApiError(500, "Failed to update task");
   }
-});
+);
 
+export const handleGetTaskById = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = (req as any).validatedData.params;
+      const task = await getTaskById(id);
+      if (!task) throw new ApiError(404, "No Task with this ID");
+      return res
+        .status(200)
+        .json(new ApiResponse(200, { task }, "Task fetch successfully"));
+    } catch (error) {
+      throw new ApiError(500, "Something went wrong");
+    }
+  }
+);
+
+export const handleUpdateTask = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = (req as any).validatedData.params;
+      const updated = (req as any).validatedData.body;
+
+      const task = await getTaskById(id);
+      if (!task) throw new ApiError(404, "task not found");
+
+      const updatedTask = await updateTask(id, updated);
+
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(
+            200,
+            { task: updatedTask },
+            "Task updated successfully"
+          )
+        );
+    } catch (error) {
+      console.error("Error: hehehe: ", error);
+      throw new ApiError(500, "Server issue");
+    }
+  }
+);
+
+export const handleDeleteTask = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = (req as any).validatedData.params;
+      
+      const task = await getTaskById(id);
+      if(!task) {
+        throw new ApiError(404, "No Task found");
+      }
+      const deleted = await deleteTask(id);
+
+      if (!deleted) throw new ApiError(404, "Task not found");
+
+      return res
+        .status(200)
+        .json(new ApiResponse(200, "Task Deleted successfully"));
+    } catch (error) {
+      throw new ApiError(500, "Server issue");
+    }
+  }
+);

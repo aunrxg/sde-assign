@@ -12,7 +12,7 @@ export const pool = mysql.createPool({
 
 const initTasksTable = async () => {
   const createTableSQL = `
-    CREATE TABLE IF NOT EXIST tasks (
+    CREATE TABLE IF NOT EXISTS tasks (
       id VARCHAR(36) PRIMARY KEY,
       title VARCHAR(255) NOT NULL,
       decription TEXT,

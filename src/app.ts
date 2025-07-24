@@ -1,4 +1,5 @@
 import express from "express";
+import { setupSwagger } from "./services/swagger.js";
 
 const app = express();
 
@@ -10,6 +11,7 @@ import taskRouter from "@routes/task.route.js";
 
 //routes declaration
 app.use("/api/v1/tasks", taskRouter);
+setupSwagger(app);
 
 
 export default app;

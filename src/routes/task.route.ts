@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import { handleCreateTask, handleDeleteTask, handleGetAllTasks, handleGetTaskById, handleUpdateTask } from "@controllers/task.controller.js";
 import { validationRequest } from "../middlewares/validationRequest.middleware.js";
-import { createTaskSchema, deleteTaskSchema, getTaskByIdSchema, updateTaskSchema } from "../validation/task.schema.js";
+import { createTaskSchema, deleteTaskSchema, getTaskByIdSchema, getTasksSchema, updateTaskSchema } from "../validation/task.schema.js";
 
 
 const taskRouter = Router();
@@ -23,6 +23,10 @@ const taskRouter = Router();
  *         description:
  *           type: string
  *           example: Get 2L milk from the supermarket
+ *         dueDate:
+ *           type: string
+ *           formate: date-time
+ *           example: 2025-07-26T10:00:00.000Z
  *         status:
  *           type: string
  *           enum: [PENDING, COMPLETED, IN_PROGRESS]
@@ -57,6 +61,9 @@ const taskRouter = Router();
  *               description:
  *                 type: string
  *                 example: Get 2L milk from the supermarket
+ *               dueDate:
+ *                 type: string
+ *                 example: 2025-07-26T10:00:00.000Z
  *               status:
  *                 type: string
  *                 enum: [PENDING, COMPLETED, IN_PROGRESS]
@@ -110,7 +117,7 @@ taskRouter.post('/', validationRequest(createTaskSchema), handleCreateTask);
  *       200:
  *         description: A paginated list of tasks
  */
-taskRouter.get('/', handleGetAllTasks);
+taskRouter.get('/', validationRequest(getTasksSchema), handleGetAllTasks);
 
 
 /**

@@ -1,5 +1,6 @@
 import mysql from "mysql2/promise";
 
+// create mymql pool
 export const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -10,6 +11,7 @@ export const pool = mysql.createPool({
   connectionLimit: 10,
 });
 
+// table creation query in not exists
 const initTasksTable = async () => {
   const createTableSQL = `
     CREATE TABLE IF NOT EXISTS tasks (
@@ -27,6 +29,7 @@ const initTasksTable = async () => {
   console.log("Task Table is ready");
 }
 
+// final connection function
 const connectDB = async () => {
   try {
     const connection = await pool.getConnection();

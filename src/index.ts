@@ -6,7 +6,7 @@ dotenv.config({
   path: './env'
 });
 
-
+// db connection on startup
 (async () => {
   await connectDB();
   app.listen(process.env.PORT, () => {

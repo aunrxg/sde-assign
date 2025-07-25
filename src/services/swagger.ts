@@ -2,6 +2,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
 
+// swagger docs setup
 const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
@@ -16,7 +17,7 @@ const options: swaggerJsdoc.Options = {
       },
     ],
   },
-  apis: ['./src/routes/*.ts'], 
+  apis: ['./src/routes/*.ts'],  // all files in route
 };
 
 const swaggerSpec = swaggerJsdoc(options);

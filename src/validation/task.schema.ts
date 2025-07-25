@@ -1,7 +1,9 @@
 import { z } from "zod";
 
+
+// ISO formate to mysql supported Date Formate
 const mysqlDateTransform = (val: string | undefined) => {
-  if (!val) return null; // if not provided
+  if (!val) return null; 
   const date = new Date(val);
   if (isNaN(date.getTime())) throw new Error("Invalid date format");
   return date.toISOString().slice(0, 19).replace("T", " ");

@@ -1,6 +1,6 @@
 import express from "express";
-import { setupSwagger } from "./services/swagger.js";
-import { errorHandler } from "./middlewares/errorHandler.middlware.js";
+import { setupSwagger } from "@services/swagger.js";
+import { errorHandler } from "@middlewares/errorHandler.middlware.js";
 
 const app = express();
 

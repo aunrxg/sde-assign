@@ -1,8 +1,8 @@
-import { pool } from "./index.js";
 import { v4 as uuidv4 } from "uuid";
-import { Task } from "@models/task.model.js";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
-
+import { pool } from "./index.js";
+import { Task } from "@models/task.model.js";
+import { PaginatedResult } from "../types/index.js";
 
 // sql query to input in tasks table
 export const createTask = async (
@@ -102,4 +102,56 @@ export const deleteTask = async (id: string): Promise<boolean> => {
     [id]
   );
   return result.affectedRows > 0;
+};
+
+
+// pagination and filter
+export const getPaginatedTasks = async (
+  page: number,
+  limit: number,
+  status?: string,
+  title?: string,
+): Promise<PaginatedResult<Task>> => {
+
+  // how many rows to skip
+  const offset = (page - 1) * limit; // 0 for page 1, limit time extra pages
+
+  let filterQuery = `WHERE 1=1`; // initial comparing query (1=1 is true)
+  const params: any[] = []; // parameters to pass into sql query dynamically avoiding sql injection
+
+
+  // if user gives status to filter from, add to filterQuery and add its parameter
+  if(status) {
+    filterQuery += ` AND status = ?`;
+    params.push(status);
+  }
+
+  // if user gives title to filter and match, add to filterQuery and add its parameter
+  if(title) {
+    filterQuery += ` AND title LIKE ?`;
+    params.push(title);
+  }
+
+  // count the number of rows/records
+  const [countRows] = await pool.query<RowDataPacket[]>(
+    `SELECT COUNT(*) as total FROM tasks ${filterQuery}`,
+    params
+  );
+  const total = countRows[0].total;
+
+
+  // fetch paginated records
+  const [rows] = await pool.query<RowDataPacket[]>(
+    `SELECT * FROM tasks ${filterQuery} ORDER BY createdAt DESC LIMIT ? OFFSET ?`, 
+    [...params, limit, offset]
+  );
+
+
+  return {
+    data: rows as Task[],
+    total,
+    page,
+    limit,
+    totalPage: Math.ceil(total/limit),
+  };
 };

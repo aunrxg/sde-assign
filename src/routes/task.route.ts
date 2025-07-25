@@ -1,8 +1,8 @@
 import { Router } from "express";
 
 import { handleCreateTask, handleDeleteTask, handleGetAllTasks, handleGetTaskById, handleUpdateTask } from "@controllers/task.controller.js";
-import { validationRequest } from "../middlewares/validationRequest.middleware.js";
-import { createTaskSchema, deleteTaskSchema, getTaskByIdSchema, getTasksSchema, updateTaskSchema } from "../validation/task.schema.js";
+import { validationRequest } from "@middlewares/validationRequest.middleware.js";
+import { createTaskSchema, deleteTaskSchema, getTaskByIdSchema, getTasksSchema, updateTaskSchema } from "@validation/task.schema.js";
 
 
 const taskRouter = Router();

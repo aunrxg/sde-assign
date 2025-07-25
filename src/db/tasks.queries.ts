@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
-import { pool } from "./index.js";
+import { pool } from "./index.js"; 
 import { Task } from "@models/task.model.js";
 import { PaginatedResult } from "../types/index.js";
 

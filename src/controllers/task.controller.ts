@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import {
   createTask,
   deleteTask,
-  getAllTasks,
+  getPaginatedTasks,
   getTaskById,
   updateTask,
 } from "@db/tasks.queries.js";
@@ -15,7 +15,7 @@ import { ApiResponse } from "@utils/apiResponse.js";
 // create task controller
 export const handleCreateTask = asyncHandler(
   async (req: Request, res: Response) => {
-    const { title, description, dueDate, status } = (req as any).validatedData.body;
+    const { title, description, dueDate, status } = req.validatedData?.body;
     const task = await createTask({ title, description, dueDate, status });
 
     res 
@@ -27,8 +27,20 @@ export const handleCreateTask = asyncHandler(
 
 // get all task controller
 export const handleGetAllTasks = asyncHandler(
-  async (_req: Request, res: Response) => {
-    const tasks = await getAllTasks();
+  async (req: Request, res: Response) => {
+
+    // get limit, page, title, status from user
+    const page = parseInt(req.validatedData?.query?.page || req.query.page) || 1;
+    const limit = parseInt(req.validatedData?.query?.limit || req.query.limit) || 10;
+    const { status, title } = req.validatedData?.query;
+
+    if(page <= 0 && limit <=0) {
+      throw new ApiError(400, "Page and limit must be positive intergers");
+    }
+
+    const tasks = await getPaginatedTasks(page, limit, status, title);
+
+    // const tasks = await getAllTasks();
     res.status(200).json(new ApiResponse(200, { tasks }, "Tasks fetched successfully"))
   }
 );
@@ -37,7 +49,7 @@ export const handleGetAllTasks = asyncHandler(
 // get task by id controller
 export const handleGetTaskById = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = (req as any).validatedData.params;
+    const { id } = req.validatedData?.params;
     const task = await getTaskById(id);
     if(!task) throw new ApiError(404, "Task not found");
     res.status(200).json(new ApiResponse(200, { task }, "Task fetched successfully"));
@@ -48,8 +60,8 @@ export const handleGetTaskById = asyncHandler(
 // update task controller
 export const handleUpdateTask = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = (req as any).validatedData.params;
-    const updates = (req as any).validatedData.body;
+    const { id } = req.validatedData?.params;
+    const updates = req.validatedData?.body;
 
     const existing = await getTaskById(id);
     if(!existing) throw new ApiError(404, "Task not found");
@@ -63,7 +75,7 @@ export const handleUpdateTask = asyncHandler(
 // delete task controller
 export const handleDeleteTask = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = (req as any).validatedData.params;
+    const { id } = req.validatedData?.params;
 
     const existing = await getTaskById(id);
     if(!existing) throw new ApiError(404, "Task not found");

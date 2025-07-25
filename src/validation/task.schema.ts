@@ -23,6 +23,17 @@ export const createTaskSchema = z.object({
   }),
 });
 
+
+// for Get /tasks (getAllTask) with pagination
+export const getTasksSchema = z.object({
+  query: z.object({
+    page: z.string(),
+    limit: z.string(),
+    status: z.string().optional(),
+    title: z.string().optional(),
+  }),
+});
+
 // for Get /tasks/:id (getTaskById)
 export const getTaskByIdSchema = z.object({
   params: z.object({

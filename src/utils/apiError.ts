@@ -1,29 +1,23 @@
-class ApiError extends Error {
 
-  statusCode: number;
-  data: any;
-  success: boolean;
-  errors: any[];
+// global error class for consistent error messages
+export class ApiError extends Error {
+
+  public readonly statusCode: number;
+  public readonly success = false;
+  public readonly errors?: { field?: string; message: string }[];
+  public readonly cause?: unknown;
 
   constructor(
     statusCode: number,
     message = "Something went wrong",
-    errors: any[] = [],
-    stack?: string,
+    errors: { field?: string; message: string }[] = [],
+    options?: { cause?: unknown },
   ) {
     super(message)
     this.statusCode = statusCode
-    this.data = null
-    this.message = message
     this.errors = errors
-    this.success = false;
+    this.cause = options?.cause;
 
-    if(stack) {
-      this.stack = stack
-    } else {
-      Error?.captureStackTrace?.(this, this.constructor)
-    }
+    Error.captureStackTrace?.(this, this.constructor);
   }
 }
-
-export { ApiError }
